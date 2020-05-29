@@ -140,6 +140,12 @@ typedef struct {
 	regex_t re;
 } SiteSpecific;
 
+typedef struct {
+	char *token;
+	char *uri;
+	int nr;
+} SearchEngine;
+
 /* Surf */
 static void usage(void);
 static void setup(void);
@@ -175,6 +181,11 @@ static void spawn(Client *c, const Arg *a);
 static void msgext(Client *c, char type, const Arg *a);
 static void destroyclient(Client *c);
 static void cleanup(void);
+static int insertmode = 0;
+static const gchar *parseuri(const gchar *uri, char **parsed_uri);
+static char **parse_address(const char *url);
+static char **parse_url(char *str);
+static int url_has_domain(char *url, char **parsed_uri);
 
 /* GTK/WebKit */
 static WebKitWebView *newview(Client *c, WebKitWebView *rv);
@@ -230,6 +241,7 @@ static void toggle(Client *c, const Arg *a);
 static void togglefullscreen(Client *c, const Arg *a);
 static void togglecookiepolicy(Client *c, const Arg *a);
 static void toggleinspector(Client *c, const Arg *a);
+static void insert(Client *c, const Arg *a);
 static void find(Client *c, const Arg *a);
 
 /* Buttons */
@@ -1333,7 +1345,11 @@ winevent(GtkWidget *w, GdkEvent *e, Client *c)
 		updatetitle(c);
 		break;
 	case GDK_KEY_PRESS:
-		if (!curconfig[KioskMode].val.i) {
+		if (!curconfig[KioskMode].val.i &&
+		    !insertmode ||
+		    CLEANMASK(e->key.state) == (MODKEY|GDK_SHIFT_MASK) ||
+		    CLEANMASK(e->key.state) == (MODKEY) ||
+		    gdk_keyval_to_lower(e->key.keyval) == (GDK_KEY_Escape)) {
 			for (i = 0; i < LENGTH(keys); ++i) {
 				if (gdk_keyval_to_lower(e->key.keyval) ==
 				    keys[i].keyval &&
@@ -1948,6 +1964,12 @@ find(Client *c, const Arg *a)
 }
 
 void
+insert(Client *c, const Arg *a)
+{
+		insertmode = (a->i);
+}
+
+void
 clicknavigate(Client *c, const Arg *a, WebKitHitTestResult *h)
 {
 	navigate(c, a);
@@ -2111,7 +2133,11 @@ main(int argc, char *argv[])
 	if (argc > 0)
 		arg.v = argv[0];
 	else
-		arg.v = "about:blank";
+	#ifdef HOMEPAGE
+		arg.v = HOMEPAGE;
+	#else
+		rg.v = "about:blank";
+	#endif
 
 	setup();
 	c = newclient(NULL);
