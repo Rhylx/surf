@@ -125,9 +125,29 @@ static SiteSpecific certs[] = {
 
 static const char * defaultsearchengine = "https://www.duckduckgo.com/?q=%s";
 static SearchEngine searchengines[] = {
-    { "dg",   "https://www.duckduckgo.com/?q=%s"   },
+    { "dg",   "https://www.duckduckgo.com/?q=%s" },
+    { "red", "https://reddit.com/r/%s" },
+    { "gh", "https://github.com/search?q=%s" },
+    { "wt", "http://en.wiktionary.org/?search=%s" },
+    { "osm", "http://www.openstreetmap.org/search?query=%s" },
+    { "tpb", "http://thepiratebay.org/search/%s" },
+    { "laincat", "http://lainchan.org/%s/catalog.html" },
+    { "eb", "https://ebay.com/sch/%s" },
+    { "etym", "http://etymonline.com/index.php?allowed_in_frame=0&search=%s" },
+    { "aw", "https://wiki.archlinux.org/index.php?title=Special%3ASearch&search=%s" },
+    { "gw", "https://wiki.gentoo.org/index.php?title=Special%3ASearch&search=%s" },
+    { "yt", "https://www.youtube.com/results?search_query=%s" },
+    { "ig", "https://wiki.installgentoo.com/index.php?search=%s&title=Special%3ASearch" },
+    { "w", "https://www.wikipedia.org/search-redirect.php?family=wikipedia&language=en&search=%s&language=en&go=Go" },
+    { "sk", "https://www.skytorrents.in/search/all/ed/1/?l=en-us&q=%s" },
+    { "vw", "https://wiki.voidlinux.eu/index.php?search=%s&title=Special%3ASearch" },
+    { "thw", "http://www.thinkwiki.org/w/index.php?search=%s&title=Special%3ASearch" },
+    { "vw", "http://vim.wikia.com/wiki/Special:Search?fulltext=Search&query=%s" },
+    { "bc", "https://www.bitchute.com/search?q=%s&sort=date_created%20desc" },
+    { "lg", "http://93.174.95.27/search.php?req=%s" },
     { "leo", "https://dict.leo.org/ende?search=%s" },
 };
+
 #define MODKEY GDK_CONTROL_MASK
 
 /* hotkeys */
