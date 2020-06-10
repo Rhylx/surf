@@ -1,11 +1,11 @@
 /* modifier 0 means no modifier */
 static int surfuseragent    = 1;  /* Append Surf version to default WebKit user agent */
 static char *fulluseragent  = ""; /* Or override the whole user agent string */
-static char *scriptfile     = "~/.surf/script.js";
-static char *styledir       = "~/.surf/styles/";
-static char *certdir        = "~/.surf/certificates/";
-static char *cachedir       = "~/.surf/cache/";
-static char *cookiefile     = "~/.surf/cookies.txt";
+static char *scriptfile     = "~/.local/surf/script.js";
+static char *styledir       = "~/.local/surf/styles/";
+static char *certdir        = "~/.local/surf/certificates/";
+static char *cachedir       = "~/.local/surf/cache/";
+static char *cookiefile     = "~/.local/surf/cookies.txt";
 
 /* Webkit default features */
 /* Highest priority value will be used.
@@ -123,6 +123,26 @@ static SiteSpecific certs[] = {
 
 static SearchEngine searchengines[] = {
 	{ "g",   "http://www.google.com/search?q=%s"   },
+        { "dg",   "https://www.duckduckgo.com/?q=%s" },
+        { "red", "https://reddit.com/r/%s" },
+        { "gh", "https://github.com/search?q=%s" },
+        { "wt", "http://en.wiktionary.org/?search=%s" },
+        { "osm", "http://www.openstreetmap.org/search?query=%s" },
+        { "tpb", "http://thepiratebay.org/search/%s" },
+        { "laincat", "http://lainchan.org/%s/catalog.html" },
+        { "eb", "https://ebay.com/sch/%s" },
+        { "etym", "http://etymonline.com/index.php?allowed_in_frame=0&search=%s" },
+        { "aw", "https://wiki.archlinux.org/index.php?title=Special%3ASearch&search=%s" },
+        { "gw", "https://wiki.gentoo.org/index.php?title=Special%3ASearch&search=%s" },
+        { "yt", "https://www.youtube.com/results?search_query=%s" },
+        { "ig", "https://wiki.installgentoo.com/index.php?search=%s&title=Special%3ASearch" },
+        { "w", "https://www.wikipedia.org/search-redirect.php?family=wikipedia&language=en&search=%s&language=en&go=Go" },
+        { "sk", "https://www.skytorrents.in/search/all/ed/1/?l=en-us&q=%s" },
+        { "vw", "https://wiki.voidlinux.eu/index.php?search=%s&title=Special%3ASearch" },
+        { "thw", "http://www.thinkwiki.org/w/index.php?search=%s&title=Special%3ASearch" },
+        { "vw", "http://vim.wikia.com/wiki/Special:Search?fulltext=Search&query=%s" },
+        { "bc", "https://www.bitchute.com/search?q=%s&sort=date_created%20desc" },
+        { "lg", "http://93.174.95.27/search.php?req=%s" },
 	{ "leo", "http://dict.leo.org/ende?search=%s" },
 };
 

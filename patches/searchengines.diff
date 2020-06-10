@@ -1,0 +1,72 @@
+diff --git a/config.h b/config.h
+index 34265f6..cae5003 100644
+--- a/config.h
++++ b/config.h
+@@ -121,6 +121,11 @@ static SiteSpecific certs[] = {
+ 	{ "://suckless\\.org/", "suckless.org.crt" },
+ };
+
++static SearchEngine searchengines[] = {
++	{ "g",   "http://www.google.com/search?q=%s"   },
++	{ "leo", "http://dict.leo.org/ende?search=%s" },
++};
++
+ #define MODKEY GDK_CONTROL_MASK
+
+ /* hotkeys */
+diff --git a/surf.c b/surf.c
+index 2b54e3c..ce04fe3 100644
+--- a/surf.c
++++ b/surf.c
+@@ -128,6 +128,11 @@ typedef struct {
+ 	unsigned int stopevent;
+ } Button;
+
++typedef struct {
++	char *token;
++	char *uri;
++} SearchEngine;
++
+ typedef struct {
+ 	const char *uri;
+ 	Parameter config[ParameterLast];
+@@ -214,6 +219,7 @@ static void webprocessterminated(WebKitWebView *v,
+                                  Client *c);
+ static void closeview(WebKitWebView *v, Client *c);
+ static void destroywin(GtkWidget* w, Client *c);
++static gchar *parseuri(const gchar *uri);
+
+ /* Hotkeys */
+ static void pasteuri(GtkClipboard *clipboard, const char *text, gpointer d);
+@@ -559,7 +565,7 @@ loaduri(Client *c, const Arg *a)
+ 			url = g_strdup_printf("file://%s", path);
+ 			free(path);
+ 		} else {
+-			url = g_strdup_printf("http://%s", uri);
++			url = parseuri(uri);
+ 		}
+ 		if (apath != uri)
+ 			free(apath);
+@@ -1765,6 +1771,22 @@ destroywin(GtkWidget* w, Client *c)
+ 		gtk_main_quit();
+ }
+
++gchar *
++parseuri(const gchar *uri) {
++	guint i;
++
++	for (i = 0; i < LENGTH(searchengines); i++) {
++		if (searchengines[i].token == NULL || searchengines[i].uri == NULL ||
++		    *(uri + strlen(searchengines[i].token)) != ' ')
++			continue;
++		if (g_str_has_prefix(uri, searchengines[i].token))
++			return g_strdup_printf(searchengines[i].uri,
++					       uri + strlen(searchengines[i].token) + 1);
++	}
++
++	return g_strdup_printf("http://%s", uri);
++}
++
+ void
+ pasteuri(GtkClipboard *clipboard, const char *text, gpointer d)
+ {
