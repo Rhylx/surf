@@ -1,0 +1,29 @@
+diff --git a/config.h b/config.h
+index d641abf..12a9251 100644
+--- a/config.h
++++ b/config.h
+@@ -146,6 +146,8 @@ static SearchEngine searchengines[] = {
+ 	{ "leo", "http://dict.leo.org/ende?search=%s" },
+ };
+
++#define HOMEPAGE "https://duckduckgo.com/"
++
+ #define MODKEY GDK_CONTROL_MASK
+
+ /* hotkeys */
+diff --git a/surf.c b/surf.c
+index ce04fe3..7e15bc5 100644
+--- a/surf.c
++++ b/surf.c
+@@ -2133,7 +2133,11 @@ main(int argc, char *argv[])
+ 	if (argc > 0)
+ 		arg.v = argv[0];
+ 	else
++	  #ifdef HOMEPAGE
++		arg.v= HOMEPAGE;
++	  #else
+ 		arg.v = "about:blank";
++	  #endif
+
+ 	setup();
+ 	c = newclient(NULL);
