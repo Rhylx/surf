@@ -140,12 +140,6 @@ typedef struct {
 	regex_t re;
 } SiteSpecific;
 
-typedef struct {
-	char *token;
-	char *uri;
-	int nr;
-} SearchEngine;
-
 /* Surf */
 static void usage(void);
 static void setup(void);
@@ -181,10 +175,6 @@ static void spawn(Client *c, const Arg *a);
 static void msgext(Client *c, char type, const Arg *a);
 static void destroyclient(Client *c);
 static void cleanup(void);
-static int insertmode = 0;
-static char **parse_address(const char *url);
-static char **parse_url(char *str);
-static int url_has_domain(char *url, char **parsed_uri);
 
 /* GTK/WebKit */
 static WebKitWebView *newview(Client *c, WebKitWebView *rv);
@@ -224,7 +214,6 @@ static void webprocessterminated(WebKitWebView *v,
                                  Client *c);
 static void closeview(WebKitWebView *v, Client *c);
 static void destroywin(GtkWidget* w, Client *c);
-static gchar *parseuri(const gchar *uri);
 
 /* Hotkeys */
 static void pasteuri(GtkClipboard *clipboard, const char *text, gpointer d);
@@ -241,7 +230,6 @@ static void toggle(Client *c, const Arg *a);
 static void togglefullscreen(Client *c, const Arg *a);
 static void togglecookiepolicy(Client *c, const Arg *a);
 static void toggleinspector(Client *c, const Arg *a);
-static void insert(Client *c, const Arg *a);
 static void find(Client *c, const Arg *a);
 
 /* Buttons */
@@ -571,7 +559,7 @@ loaduri(Client *c, const Arg *a)
 			url = g_strdup_printf("file://%s", path);
 			free(path);
 		} else {
-			url = parseuri(uri);
+			url = g_strdup_printf("http://%s", uri);
 		}
 		if (apath != uri)
 			free(apath);
@@ -1345,11 +1333,7 @@ winevent(GtkWidget *w, GdkEvent *e, Client *c)
 		updatetitle(c);
 		break;
 	case GDK_KEY_PRESS:
-		if (!curconfig[KioskMode].val.i &&
-		    !insertmode ||
-		    CLEANMASK(e->key.state) == (MODKEY|GDK_SHIFT_MASK) ||
-		    CLEANMASK(e->key.state) == (MODKEY) ||
-		    gdk_keyval_to_lower(e->key.keyval) == (GDK_KEY_Escape)) {
+		if (!curconfig[KioskMode].val.i) {
 			for (i = 0; i < LENGTH(keys); ++i) {
 				if (gdk_keyval_to_lower(e->key.keyval) ==
 				    keys[i].keyval &&
@@ -1781,22 +1765,6 @@ destroywin(GtkWidget* w, Client *c)
 		gtk_main_quit();
 }
 
-gchar *
-parseuri(const gchar *uri) {
-	guint i;
-
-	for (i = 0; i < LENGTH(searchengines); i++) {
-		if (searchengines[i].token == NULL || searchengines[i].uri == NULL ||
-		    *(uri + strlen(searchengines[i].token)) != ' ')
-			continue;
-		if (g_str_has_prefix(uri, searchengines[i].token))
-			return g_strdup_printf(searchengines[i].uri,
-					       uri + strlen(searchengines[i].token) + 1);
-	}
-
-	return g_strdup_printf(defaultsearchengine, uri);
-}
-
 void
 pasteuri(GtkClipboard *clipboard, const char *text, gpointer d)
 {
@@ -1980,12 +1948,6 @@ find(Client *c, const Arg *a)
 }
 
 void
-insert(Client *c, const Arg *a)
-{
-		insertmode = (a->i);
-}
-
-void
 clicknavigate(Client *c, const Arg *a, WebKitHitTestResult *h)
 {
 	navigate(c, a);
@@ -2149,11 +2111,7 @@ main(int argc, char *argv[])
 	if (argc > 0)
 		arg.v = argv[0];
 	else
-	#ifdef HOMEPAGE
-		arg.v = HOMEPAGE;
-	#else
-		rg.v = "about:blank";
-	#endif
+		arg.v = "about:blank";
 
 	setup();
 	c = newclient(NULL);
