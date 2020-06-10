@@ -146,6 +146,8 @@ static SearchEngine searchengines[] = {
 	{ "leo", "http://dict.leo.org/ende?search=%s" },
 };
 
+#define HOMEPAGE "https://duckduckgo.com/"
+
 #define MODKEY GDK_CONTROL_MASK
 
 /* hotkeys */
